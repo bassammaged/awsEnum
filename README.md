@@ -83,7 +83,9 @@ options:
 <h2 id="prerequisites"> :cd: Prerequisites</h2>
 
 1. Python3
-2. pip package manager
+2. `pip` package manager
+3. `python3 -m pip install requirements.txt`
+4. Feel Free to use `awsEnum` via `run.py` script
 
 <h2 id="results-and-discussion"> :paperclip: Results and FQAs</h2>
 
