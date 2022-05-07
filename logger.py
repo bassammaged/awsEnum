@@ -118,7 +118,7 @@ class logit:
             sign = '\u0021'
             color = colorama.Fore.LIGHTBLUE_EX
             if criticality_level == 'd':
-                sign = '>>'
+                sign = '>'
                 color = colorama.Fore.LIGHTCYAN_EX
             if criticality_level == 'w':
                 sign = '\u2622'
@@ -133,7 +133,7 @@ class logit:
                 sign = '\u2714'
                 color = colorama.Fore.GREEN
 
-            print(color + sign + ' ' + message + colorama.Style.RESET_ALL)
+            print(color + '[' + sign + '] ' + message + colorama.Style.RESET_ALL)
 
 class _terminator():
     '''
