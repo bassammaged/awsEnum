@@ -22,8 +22,10 @@ def weclome():
 █  ▄   █   ▄   █▄▄▄▄▄█ █   █▄▄▄█ █ █   █       █ ██▄██ █
 █▄█ █▄▄█▄▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█▄▄▄▄▄▄▄█▄█   █▄█
 --------------------------------------------------------
-If you looking to enumerate AWS services. So, welcome
-to awsEnum :) 
+If you are looking to enumerate AWS services. So, welcome
+to awsEnum :) awsEnum is a python script trying to facilate 
+the enumrate phase of AWS cloud with lowest possible headic
+and less noisy. Therefore we are not support `all` mode.
 --------------------------------------------------------
         developed by bassammaged (@kemet)
                 version: {}

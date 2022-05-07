@@ -42,7 +42,7 @@ class aws_service:
             self.aws_session    = boto3.Session(profile_name=self.profile,region_name=self.region)
             self.logit_obj.add('i','AWS session has been stablished successfully.')
         except Exception as e:
-            self.logit_obj.add('e',"Failed to stablish connection with AWS, ERROR message: {}".format(e))
+            self.logit_obj.add('e',"Failed to establish connection with AWS, ERROR message: {}".format(e))
         
         try:
             if self.service_name == 'ec2':
