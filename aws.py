@@ -42,7 +42,7 @@ class aws_service:
             self.aws_session    = boto3.Session(profile_name=self.profile,region_name=self.region)
             self.logit_obj.add('i','AWS session has been stablished successfully.')
         except Exception as e:
-            self.logit_obj.add('e',"Failed to stablish connection with AWS, ERROR message: {}".format(e))
+            self.logit_obj.add('e',"Failed to establish connection with AWS, ERROR message: {}".format(e))
         
         try:
             if self.service_name == 'ec2':
@@ -63,6 +63,14 @@ class ec2:
     result = []
 
     def __init__(self,aws_session,tries,logit_obj):
+        '''
+            `ec2()` takes 3 arguments
+
+            Arguments:
+                - `boto3 session object` aws_session
+                - `int` tries
+                - `logit object` logit_obj
+        '''
         self.aws_session    = aws_session
         self.tries          = tries
         self.logit_obj      = logit_obj
@@ -71,6 +79,10 @@ class ec2:
         self._call_describe_isntance_method()
 
     def _call_describe_isntance_method(self):
+        '''
+            `_call_describe_isntance_method()` Designed to request method based on NextToken.
+            the response is analyzed by `_extract_ec2_info()`
+        '''
         try:
             # -- call service
             client = self.aws_session.client('ec2')
@@ -98,6 +110,9 @@ class ec2:
 
 
     def _extract_ec2_info(self,response):
+        '''
+            `_extract_ec2_info()` is coded to extract the EC2 info out of the AWS method response.
+        '''
         try:
             for reservation in response['Reservations']:
                 for instance in reservation['Instances']:
