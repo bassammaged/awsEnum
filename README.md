@@ -34,9 +34,10 @@
 █▄█ █▄▄█▄▄█ █▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄█  █▄▄█▄▄▄▄▄▄▄█▄█   █▄█
 --------------------------------------------------------
 If you are looking to enumerate AWS services. So, welcome
-to awsEnum :) awsEnum is a python script trying to facilate 
-the enumrate phase of AWS cloud with lowest possible headic
-and less noisy. Therefore we are not support `all` mode.
+to awsEnum, awsEnum is a python script trying to facilitate 
+the enumerate phase of AWS cloud with the lowest possible
+headache and less noise. Therefore we are not supporting 
+the `all` mode. ----------------------------------------
 --------------------------------------------------------
         developed by bassammaged (@kemet)
                 version: 0.1 Beta
@@ -228,4 +229,5 @@ options:
 
 <h2 id="to-do"> :paperclip: To-Do</h2>
 
-- [ ] Support `iam`,`s3` services. 
+- [x] Support `s3` services. 
+- [ ] Support `iam` services. 
