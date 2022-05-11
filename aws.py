@@ -1,5 +1,4 @@
-import boto3
-from numpy import full
+import boto3,botocore
 from logger import CustomError, logit
 from json import dump
 from os import path
@@ -46,13 +45,20 @@ class aws_service:
         
         try:
             if self.service_name == 'ec2':
-                obj = ec2(self.aws_session,self.tries,self.logit_obj)   
+                obj = ec2(self.aws_session,self.tries,self.logit_obj)
+                store_results(self.service_name,self.profile,self.region,obj.result,self.logit_obj)
+            elif self.service_name == 's3':
+                obj = s3(self.aws_session,self.tries,self.logit_obj) 
+                store_results(self.service_name,self.profile,self.region,obj.buckets_name,self.logit_obj)
+                if len(obj.bucket_objets) != 0:
+                    store_results('s3-list_object',self.profile,self.region,obj.bucket_objets,self.logit_obj)
+
             else:
                 raise CustomError('c','Still under development.')
         except CustomError as e:
                 self.logit_obj.add(e.criticality_level,e.message)
 
-        store_results(self.service_name,self.profile,self.region,obj.result,self.logit_obj)
+        
 
                    
 
@@ -88,8 +94,8 @@ class ec2:
             client = self.aws_session.client('ec2')
             # -- Call method
             response = client.describe_instances(MaxResults=self.tries)
-        except:
-            self.logit_obj.add('e','Error happened while calling the ec2 service and describe_instances method')
+        except Exception as e:
+            self.logit_obj.add('e','Error happened while calling the ec2 service and describe_instances method, Error message: {}'.format(e))
 
         self._extract_ec2_info(response)
 
@@ -122,7 +128,63 @@ class ec2:
         
         self.logit_obj.add('d','EC2 info has been extracted from the response.')
 
+class s3:
+    '''
+        s3 class responsible to enumerate information and extract the valuable information.
+    '''
+    def __init__(self,aws_session,tries,logit_obj):
+        '''
+            `ec2()` takes 3 arguments
 
+            Arguments:
+                - `boto3 session object` aws_session
+                - `int` tries
+                - `logit object` logit_obj
+        '''
+        self.aws_session    = aws_session
+        self.tries          = tries
+        self.logit_obj      = logit_obj
+
+        self._call_list_buckets_method()
+
+    def _call_list_buckets_method(self):
+        try:
+            # -- call service
+            client = self.aws_session.client('s3')
+            # -- Call method
+            response = client.list_buckets(MaxResults=self.tries)
+        except Exception as e:
+            self.logit_obj.add('e','Error happened while calling the s3 service and list_buckets method, Error message: {}'.format(e))
+
+        # -- Extract all buckets name
+        try:
+            self.buckets_name = []
+            for bucket in response['Buckets']:
+                self.buckets_name.append(bucket['Name'])
+            self.logit_obj.add('d','s3 buckets\' name has been extracted from the response.')
+        except:
+            self.logit_obj.add('e','Fatal error, there\'s an error happened while gathering s3 buckets name.')
+
+
+        # -- List all objects within the s3 buckets
+        try:
+            self.bucket_objets = {}
+            for bucket in self.buckets_name:
+                response = client.list_objects_v2(Bucket=bucket, MaxKeys=1000)
+                self.bucket_objets[bucket] = response['Contents']
+                while response['IsTruncated']:
+                    response = client.list_objects_v2(Bucket=bucket, MaxKeys=1000, ContinuationToken=response['NextContinuationToken'])
+                    self.bucket_objets[bucket].append(response['Contents'])
+            self.logit_obj.add('d','s3 buckets\' objects has been extracted from the response.')
+        except botocore.exceptions.ClientError as e:
+            if e.args[0].find('AccessDenied'):
+                self.logit_obj.add('w','Access Denied! The s3 objects couldn\'t be listed.')
+            else:
+                self.logit_obj.add('e','Fatal error, there\'s an error happened while gathering s3 buckets object, Error message: {}'.format(e))
+        except Exception as e:
+                self.logit_obj.add('e','Fatal error, there\'s an error happened while gathering s3 buckets object, Error message: {}'.format(e))
+
+        
 
 class store_results:
     def __init__(self,service_name,profile,region,result,logit_obj):
@@ -130,6 +192,6 @@ class store_results:
         try:
             with open(fullpath, 'w+') as f:
                 dump(result, f, indent=4, default=str)
-            logit_obj.add('f','EC2 information is stored at {}'.format(fullpath))
+            logit_obj.add('f','{} information is stored at {}'.format(service_name,fullpath))
         except Exception as e:
-            logit_obj.add('c','Error while storing the EC2 info into {}. Error message: {}'.format(fullpath,e))
+            logit_obj.add('c','Error while storing the {} info into {}. Error message: {}'.format(service_name,fullpath,e))

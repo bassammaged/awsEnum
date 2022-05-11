@@ -229,4 +229,5 @@ options:
 
 <h2 id="to-do"> :paperclip: To-Do</h2>
 
-- [ ] Support `iam`,`s3` services. 
+- [x] Support `s3` services. 
+- [ ] Support `iam` services. 
